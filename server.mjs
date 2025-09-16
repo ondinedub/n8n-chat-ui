@@ -6,7 +6,7 @@ app.use(express.static("public"));
 
 const { PORT = 3000, ACCESS_CODE, N8N_WEBHOOK_URL, N8N_WEBHOOK_TOKEN } = process.env;
 
-// Répondre sur / et /healthz (health check Koyeb)
+// Réponses santé (OK pour le health check Koyeb)
 app.get("/", (_, res) => res.send("ok"));
 app.get("/healthz", (_, res) => res.send("ok"));
 
