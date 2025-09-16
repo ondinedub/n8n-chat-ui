@@ -1,0 +1,29 @@
+<!doctype html><meta charset="utf-8"/>
+<title>Chat n8n</title>
+<style>
+  body{font-family:system-ui;margin:2rem;max-width:720px}
+  #log{border:1px solid #ddd;border-radius:.5rem;padding:1rem;height:380px;overflow:auto}
+  .me{color:#0a58ca}.bot{color:#198754}
+</style>
+<h1>Chat n8n</h1>
+<label>Code d'accès (optionnel): <input id="code" placeholder="******"></label>
+<div id="log"></div>
+<form id="f"><input id="msg" placeholder="Votre message…" style="width:80%"><button>Envoyer</button></form>
+<script>
+  const log = document.getElementById('log'), f = document.getElementById('f'), msg = document.getElementById('msg'), code = document.getElementById('code');
+  const sessionId = crypto.randomUUID();
+  const add = (cls, text) => { const p = document.createElement('p'); p.className=cls; p.textContent=text; log.appendChild(p); log.scrollTop=log.scrollHeight; };
+  f.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const m = msg.value.trim(); if(!m) return;
+    add('me', m); msg.value = ""; add('bot', '…');
+    const r = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json', ...(code.value?{Authorization:'Bearer '+code.value}:{})},
+      body: JSON.stringify({ message:m, sessionId })
+    });
+    const data = await r.json().catch(()=>({reply:"(réponse invalide)"}));
+    log.lastChild.remove();
+    add('bot', data.reply ?? "(aucune réponse)");
+  });
+</script>
